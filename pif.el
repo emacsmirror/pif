@@ -1,5 +1,36 @@
 ;;; pif.el --- Prevent Initial Flash of Light -*- lexical-binding: t -*-
 
+;; Copyright (C) 2021-2025 Free Software Foundation, Inc.
+
+;; Author: Oliver Epper <oliver.epper@gmail.com>
+;; Maintainer: Oliver Epper <oliver.epper@gmail.com>
+;; Created: 2025
+;; Package-Version: 
+;; Package-Revision:
+;; Package-Requires: ((emacs "29.1") (compat "30"))
+;; URL: https://github.com/oliverepper/pif
+;; Keywords: convenience
+
+;; This file is part of GNU Emacs.
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; pif.el is designed to prevent the Initial Flash of Light when
+;; starting up Emacs.
+
 ;;; Code:
 
 (defgroup pif-group ()
@@ -28,11 +59,32 @@
 (defconst pif-file-name ".pif.el"
   "Filename for storing PIF-related data within `user-emacs-directory`.")
 
-;;;; Functions
+;;;; Public API
+
+(defun pif-early ()
+  "Hides the UI-elements and prepares the size and position of the initial
+frame. This can be done without knowing if Emacs will start in 'light,
+or 'dark mode."
+  (pif--hide-ui-elements)
+  (pif--prepare-frame))
+
+(defun pif (appearance)
+  "Configures the colors of the initial frame to prevent the 'Flash of
+Light'.
+
+APPEARANCE specifies whether to load the colors for 'light or 'dark
+mode."
+  (pif--set-colors appearance))
+
+(defun pif-reset ()
+  "Reset all colors to the values that where active before `pif` was
+called."
+  (pif--reset-colors))
 
 (defun pif-update (appearance)
-  "Save or update the colors, and the size, and position of the initial
-frame.
+  "Save or update the colors, the size, and position of the initial
+frame. Call this at your convenience. The `kill-emacs-hook` might be a
+good choice.
 
 APPEARANCE specifies whether to save the colors for 'light or 'dark
 mode."
@@ -43,10 +95,7 @@ mode."
     (pif--update-state 'frame 'left       (frame-parameter initial-frame 'left))
     (pif--update-state 'frame 'top        (frame-parameter initial-frame 'top))))
 
-(defun pif-early ()
-  ""
-  (pif--hide-ui-elements)
-  (pif--prepare-frame))
+;;;; Private Functions
 
 (defun pif--hide-ui-elements ()
   (setq cursor-type nil)
@@ -66,18 +115,6 @@ mode."
                       (top                     . ,(alist-get 'top  saved-state))
                       (ns-transparent-titlebar . t))
                     ())))))
-
-(defun pif (appearance)
-  "Configure the colors, and the size, and position of the initial frame to
-prevent the 'Initial Flash of Light'.
-
-APPEARANCE specifies whether to load the colors for 'light or 'dark
-mode."
-  (pif--set-colors appearance))
-
-(defun pif-reset ()
-  "Reset everything to the values that where active before `pif` was called."
-  (pif--reset-colors))
 
 (defun pif--set-colors (appearance)
   ;; FIXME: This should really be one step later. Maybe we have 'dark
@@ -141,3 +178,4 @@ mode."
     (pif--write-state state)))
 
 (provide 'pif)
+;;; pif.el ends here
