@@ -1,0 +1,118 @@
+#+title: Prevent Initial Flash of Light
+#+author: Oliver Epper
+#+email: oliver.epper@gmail.com
+#+language: en
+#+options: ':t toc:nil author:t email:t
+
+=pif.el= prevents the initial "Flash of Light" during Emacs startup.
+
+In addition to reducing the "Flash of Light", it ensures that the initial frame appears in the correct size and position – just as it was when Emacs was closed. Furthermore, it hides GUI elements such as the modeline, fringes, and the cursor during startup for a distraction-free initialization.
+
+** Demo
+
+Before and after comparison: [[https://youtu.be/vrFEPnmE4ug][PIF.el Demonstration]].
+
+** Features
+
+- Prevents the initial "Flash of Light" during Emacs startup.
+- Ensures the initial frame loads with the correct dimensions and position.
+- Hides GUI elements (modeline, fringes, and cursors) during startup to minimize visual distractions.
+- Restores values after the initial startup to prevent surprises when loading custom themes.
+- Supports light and dark-mode.
+
+** Setup
+
+The public interface of =pif.el= consists of four functions:
+
+*** ~pif-early~
+
+This hides some UI-elements (cursor, tool-bar, scroll-bar, and modeline) during early startup. Call it early in your ~early-init.el~.
+
+  #+begin_src emacs-lisp
+    (add-to-list 'load-path (expand-file-name (locate-user-emacs-file "local/pif")))
+    (require 'pif)
+
+    (pif-early)
+  #+end_src
+
+*** ~pif APPEARANCE~
+
+This function sets the foreground and background color of the ~default~ and the ~fringe~ face to prevent the "Flash of Light". I use =pif.el= on a Mac and my Emacs distribution features the hook ~ns-system-appearance-change-functions~ which gets called early enough during startup so that my next line in ~early-init.el~ is:
+
+  #+begin_src emacs-lisp
+    (add-hook 'ns-system-appearance-change-functions #'pif)
+  #+end_src
+
+  You can, of course, just call ~(pif 'dark)~, if you always work in dark mode, or come up with your own sophisticated mechanism.
+
+*** ~pif-reset~
+
+This resets the colors back to the values they had before ~pif~ was called. I call this first at the top of my ~init.el~ and I *remove ~pif~ from the ~ns-appearance-change-functions~*:
+
+  #+begin_src emacs-lisp
+    (when (fboundp 'pif-reset)
+      (pif-reset)
+      (remove-hook 'ns-system-appearance-change-functions #'pif))
+  #+end_src
+
+  *CAUTION*: The initial value for the property ~background~ of the ~default~ face is ~unspecified-bg~. Since this value cannot be set from elisp ~pif-reset~ resets it to ~unspecified~. The same is true for ~foreground~ and the value ~unspecified-fg~.
+
+*** ~pif-update~
+
+This is the function that saves the current background color, as well as the position and size of the initial frame so that these can be used during startup. You can call this function whenever things change, but a simple and robust place is the ~kill-emacs~ hook.
+
+  #+begin_src emacs-lisp
+    (add-hook 'kill-emacs-hook
+              (lambda ()
+                (if (fboundp 'pif-update)
+                    (pif-update ns-system-appearance))))
+  #+end_src
+
+** Summary
+
+- Call ~pif-early~ and ~pif APPEARANCE~ from your ~early-init.el~ file.
+
+- Call ~pif-reset~ early in your ~init.el~ file. (Also remove any hook that calls ~pif APPEARANCE~.) 
+
+- Call ~pif-update~ from the kill-emacs hook.
+
+*** Example ~early-init.el~
+
+#+begin_src emacs-lisp
+  (add-to-list 'load-path (expand-file-name (locate-user-emacs-file "local/pif")))
+  (require 'pif)
+
+  (pif-early)
+  (add-hook 'ns-system-appearance-change-functions #'pif)
+#+end_src
+
+*** Example ~init.el~
+
+#+begin_src emacs-lisp
+  (when (fboundp 'pif-reset)
+    (pif-reset)
+    (remove-hook 'ns-system-appearance-change-functions #'pif))
+#+end_src
+
+*** Example Emacs Configuration
+
+#+begin_src emacs-lisp
+  (use-package emacs
+    :ensure nil
+    :hook
+    (kill-emacs . (lambda ()
+                    (if (fboundp 'pif-update)
+                        (pif-update ns-system-appearance)))))
+#+end_src
+
+** Contributing
+
+I am still fairly new to Emacs and this is my first shot at creating a package. If you find a bug or have any suggestions, feel free to open an issuse or submit a pull request.
+
+** Acknowledgments
+
+- [[https://christiantietze.de/posts/tags/emacs/][Christian Tietze]]: Thank you for darwing my attention to Emacs!
+  
+- [[https://protesilaos.com][Protesilaos Stavrou (Prot)]]: Thank you for beeing a great resource for learning Emacs! Your detailed tutorials and the packages you create are very helpful. I got the idea for this package from your Emacs configuration.
+
+
