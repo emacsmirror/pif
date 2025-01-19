@@ -6,7 +6,6 @@
 ;; Maintainer: Oliver Epper <oliver.epper@gmail.com>
 ;; Created: 2025
 ;; Package-Version: 0.0.1
-;; Package-Revision:
 ;; Package-Requires: ((emacs "29.1") (compat "30"))
 ;; URL: https://github.com/oliverepper/pif
 ;; Keywords: convenience
