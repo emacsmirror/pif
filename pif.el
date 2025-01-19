@@ -120,9 +120,6 @@ mode."
                     ())))))
 
 (defun pif--set-colors (appearance)
-  ;; FIXME: This should really be one step later. Maybe we have 'dark
-  ;; saved but need 'light right now. We should still be able to
-  ;; fall-back, then
   (let* ((saved-state (alist-get 'colors (pif--read-state)))
          (bg (alist-get appearance saved-state
                         (pcase appearance
