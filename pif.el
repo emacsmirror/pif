@@ -33,26 +33,26 @@
 
 ;;; Code:
 
-(defgroup pif-group ()
+(defgroup pif ()
   "Prevent Initial Flash of Light"
   :group 'convenience)
 
 ;;;; User options
 
-(defcustom pif-fallback-light-color "#ff0000" ; "#efe9dd"
+(defcustom pif-fallback-light-color "#efe9dd"
   "Fallback color used in light mode if no color was saved."
   :type 'color
-  :group 'pif-group)
+  :group 'pif)
 
-(defcustom pif-fallback-dark-color "#00ff00" ; "#1d2235"
+(defcustom pif-fallback-dark-color "#1d2235"
   "Fallback color used in dark mode if no color was saved."
   :type 'color
-  :group 'pif-group)
+  :group 'pif)
 
-(defcustom pif-hide-ui-elements t
-  ""
+(defcustom pif-enable t
+  "Wether to enable or to disable pif"
   :type 'boolean
-  :group 'pif-group)
+  :group 'pif)
 
 ;;;; Constants
 
@@ -65,8 +65,9 @@
   "Hides the UI-elements and prepares the size and position of the initial
 frame. This can be done without knowing if Emacs will start in 'light,
 or 'dark mode."
-  (pif--hide-ui-elements)
-  (pif--prepare-frame))
+  (when pif-enable
+      (pif--hide-ui-elements)
+      (pif--prepare-frame)))
 
 (defun pif (appearance)
   "Configures the colors of the initial frame to prevent the 'Flash of
@@ -74,12 +75,14 @@ Light'.
 
 APPEARANCE specifies whether to load the colors for 'light or 'dark
 mode."
-  (pif--set-colors appearance))
+  (when pif-enable
+    (pif--set-colors appearance)))
 
 (defun pif-reset ()
   "Reset all colors to the values that where active before `pif` was
 called."
-  (pif--reset-colors))
+  (when pif-enable
+    (pif--reset-colors)))
 
 (defun pif-update (appearance)
   "Save or update the colors, the size, and position of the initial
