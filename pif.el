@@ -5,7 +5,7 @@
 ;; Author: Oliver Epper <oliver.epper@gmail.com>
 ;; Maintainer: Oliver Epper <oliver.epper@gmail.com>
 ;; Created: 2025
-;; Package-Version: 
+;; Package-Version:
 ;; Package-Revision:
 ;; Package-Requires: ((emacs "29.1") (compat "30"))
 ;; URL: https://github.com/oliverepper/pif
@@ -34,7 +34,7 @@
 ;;; Code:
 
 (defgroup pif ()
-  "Prevent Initial Flash of Light"
+  "Prevent Initial Flash of Light."
   :group 'convenience)
 
 ;;;; User options
@@ -50,47 +50,45 @@
   :group 'pif)
 
 (defcustom pif-enable t
-  "Wether to enable or to disable pif"
+  "Wether to enable or to disable pif."
   :type 'boolean
   :group 'pif)
 
 ;;;; Constants
 
 (defconst pif-file-name ".pif.el"
-  "Filename for storing PIF-related data within `user-emacs-directory`.")
+  "Filename for storing PIF-related data within the `user-emacs-directory'.")
 
 ;;;; Public API
 
 (defun pif-early ()
-  "Hides the UI-elements and prepares the size and position of the initial
-frame. This can be done without knowing if Emacs will start in 'light,
-or 'dark mode."
+  "Hide UI-elements and prepare size and position of the initial frame.
+
+This can be done without knowing if Emacs will start in 'light', or
+'dark' mode."
   (when pif-enable
       (pif--hide-ui-elements)
       (pif--prepare-frame)))
 
 (defun pif (appearance)
-  "Configures the colors of the initial frame to prevent the 'Flash of
-Light'.
+  "Configure colors to prevent the \\='Flash of Light\\='.
 
-APPEARANCE specifies whether to load the colors for 'light or 'dark
+APPEARANCE specifies whether to load the colors for 'light' or 'dark'
 mode."
   (when pif-enable
     (pif--set-colors appearance)))
 
 (defun pif-reset ()
-  "Reset all colors to the values that where active before `pif` was
-called."
+  "Reset all colors to the values before `pif' was called."
   (when pif-enable
     (pif--reset-colors)))
 
 (defun pif-update (appearance)
-  "Save or update the colors, the size, and position of the initial
-frame. Call this at your convenience. The `kill-emacs-hook` might be a
-good choice.
+  "Save or update colors, size, and position of the initial frame.
 
-APPEARANCE specifies whether to save the colors for 'light or 'dark
-mode."
+APPEARANCE specifies whether to save the colors for 'light' or 'dark'
+mode.  Call this at your convenience.  The `kill-emacs-hook' might be a
+good choice."
   (let* ((initial-frame (car (visible-frame-list))))
     (pif--update-state 'colors appearance (frame-parameter initial-frame 'background-color))
     (pif--update-state 'frame 'width      (frame-parameter initial-frame 'width))
@@ -101,12 +99,14 @@ mode."
 ;;;; Private Functions
 
 (defun pif--hide-ui-elements ()
+  "Hide UI-elements."
   (setq cursor-type nil)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (setq mode-line-format nil))
 
 (defun pif--prepare-frame ()
+  "Configure `default-frame-alist'."
   (let ((saved-state (alist-get 'frame (pif--read-state))))
     (when saved-state
       (setq default-frame-alist
@@ -120,6 +120,7 @@ mode."
                     ())))))
 
 (defun pif--set-colors (appearance)
+  "Set colors according to APPEARANCE."
   (let* ((saved-state (alist-get 'colors (pif--read-state)))
          (bg (alist-get appearance saved-state
                         (pcase appearance
@@ -136,6 +137,9 @@ mode."
       (set-face-attribute 'fringe nil :background bg :foreground bg))))
 
 (defun pif--set-face-attribute (face attribute value)
+  "Set the FACE ATTRIBUTE with VALUE.
+
+Translates `upspecified-bg' and `unspecified-fg' to `unspecified'."
   (when value
     (set-face-attribute face nil attribute
                         (if (member value '(unspecified-bg unspecified-fg))
@@ -143,6 +147,7 @@ mode."
                           value))))
 
 (defun pif--reset-colors ()
+  "Reset colors to their original values."
   (let ((saved-state (alist-get 'colors (pif--read-state))))
     (when saved-state
       (let ((orig-default-background (alist-get 'default-background saved-state))
@@ -155,6 +160,7 @@ mode."
         (pif--set-face-attribute 'fringe  :foreground orig-fringe-foreground)))))
 
 (defun pif--read-state ()
+  "Read the state from `pif-file-name' in the `user-emacs-directory'."
   (let ((pif-file (expand-file-name pif-file-name user-emacs-directory)))
     (if (file-exists-p pif-file)
         (with-temp-buffer
@@ -165,10 +171,12 @@ mode."
       nil)))
 
 (defun pif--write-state (state)
+  "Save STATE to `pif-file-name' in the `user-emacs-directory'."
   (with-temp-file (expand-file-name pif-file-name user-emacs-directory)
     (insert (prin1-to-string state))))
 
 (defun pif--update-state (key subkey value)
+  "Update then save the VALUE for SUBKEY under KEY."
   (let* ((state (pif--read-state))
          (existing-sublist (alist-get key state))
          (updated-sublist (assoc-delete-all subkey existing-sublist)))
@@ -179,3 +187,4 @@ mode."
 
 (provide 'pif)
 ;;; pif.el ends here
+
