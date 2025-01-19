@@ -64,16 +64,16 @@
 (defun pif-early ()
   "Hide UI-elements and prepare size and position of the initial frame.
 
-This can be done without knowing if Emacs will start in 'light', or
-'dark' mode."
+This can be done without knowing if Emacs will start in `light', or
+`dark' mode."
   (when pif-enable
       (pif--hide-ui-elements)
       (pif--prepare-frame)))
 
 (defun pif (appearance)
-  "Configure colors to prevent the \\='Flash of Light\\='.
+  "Configure colors to prevent the \='Flash of Light\='.
 
-APPEARANCE specifies whether to load the colors for 'light' or 'dark'
+APPEARANCE specifies whether to load the colors for `light' or `dark'
 mode."
   (when pif-enable
     (pif--set-colors appearance)))
@@ -86,7 +86,7 @@ mode."
 (defun pif-update (appearance)
   "Save or update colors, size, and position of the initial frame.
 
-APPEARANCE specifies whether to save the colors for 'light' or 'dark'
+APPEARANCE specifies whether to save the colors for `light' or `dark'
 mode.  Call this at your convenience.  The `kill-emacs-hook' might be a
 good choice."
   (let* ((initial-frame (car (visible-frame-list))))
@@ -182,7 +182,7 @@ Translates `upspecified-bg' and `unspecified-fg' to `unspecified'."
          (updated-sublist (assoc-delete-all subkey existing-sublist)))
     (setq updated-sublist (cons (cons subkey value) updated-sublist))
     (setq state (assoc-delete-all key state))
-    (add-to-list 'state (cons key updated-sublist))
+    (push (cons key updated-sublist) state)
     (pif--write-state state)))
 
 (provide 'pif)
