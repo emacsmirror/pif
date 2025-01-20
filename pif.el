@@ -5,7 +5,7 @@
 ;; Author: Oliver Epper <oliver.epper@gmail.com>
 ;; Maintainer: Oliver Epper <oliver.epper@gmail.com>
 ;; Created: 2025
-;; Package-Version: 0.0.3
+;; Package-Version: 0.0.4
 ;; Package-Requires: ((emacs "29.1"))
 ;; URL: https://github.com/oliverepper/pif
 ;; Keywords: display, startup, appearance, dark-theme, usability
