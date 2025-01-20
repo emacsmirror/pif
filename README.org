@@ -50,7 +50,7 @@ This function sets the foreground and background color of the ~default~ and the 
 This resets the colors back to the values they had before ~pif~ was called. I call this first at the top of my ~init.el~ and I *remove ~pif~ from the ~ns-appearance-change-functions~*:
 
   #+begin_src emacs-lisp
-    (when (fboundp 'pif-reset)
+    (when (featurep 'pif)
       (pif-reset)
       (remove-hook 'ns-system-appearance-change-functions #'pif))
   #+end_src
@@ -62,10 +62,8 @@ This resets the colors back to the values they had before ~pif~ was called. I ca
 This is the function that saves the current background color, as well as the position and size of the initial frame so that these can be used during startup. You can call this function whenever things change, but a simple and robust place is the ~kill-emacs~ hook.
 
   #+begin_src emacs-lisp
-    (add-hook 'kill-emacs-hook
-              (lambda ()
-                (if (fboundp 'pif-update)
-                    (pif-update ns-system-appearance))))
+    (add-hook 'kill-emacs-hook (lambda ()
+                                 (pif-update ns-system-appearance)))
   #+end_src
 
 ** Summary
@@ -89,20 +87,11 @@ This is the function that saves the current background color, as well as the pos
 *** Example ~init.el~
 
 #+begin_src emacs-lisp
-  (when (fboundp 'pif-reset)
+  (when (featurep 'pif)
     (pif-reset)
-    (remove-hook 'ns-system-appearance-change-functions #'pif))
-#+end_src
-
-*** Example Emacs Configuration
-
-#+begin_src emacs-lisp
-  (use-package emacs
-    :ensure nil
-    :hook
-    (kill-emacs . (lambda ()
-                    (if (fboundp 'pif-update)
-                        (pif-update ns-system-appearance)))))
+    (remove-hook 'ns-system-appearance-change-functions #'pif)
+    (add-hook 'kill-emacs-hook (lambda ()
+                                 (pif-update ns-system-appearance))))
 #+end_src
 
 ** Contributing
