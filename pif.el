@@ -186,4 +186,3 @@ Translates `upspecified-bg' and `unspecified-fg' to `unspecified'."
 
 (provide 'pif)
 ;;; pif.el ends here
-
