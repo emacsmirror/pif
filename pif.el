@@ -8,7 +8,7 @@
 ;; Package-Version: 0.0.4
 ;; Package-Requires: ((emacs "29.1"))
 ;; URL: https://github.com/oliverepper/pif
-;; Keywords: display, startup, appearance, dark-theme, usability
+;; Keywords: convenience, faces, display, startup, appearance, dark-theme
 
 ;; This file is NOT part of GNU Emacs.
 
