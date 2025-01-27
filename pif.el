@@ -1,6 +1,6 @@
 ;;; pif.el --- Prevent Initial Flash of Light -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021-2025 Free Software Foundation, Inc.
+;; Copyright (C) 2025 Oliver Epper
 
 ;; Author: Oliver Epper <oliver.epper@gmail.com>
 ;; Maintainer: Oliver Epper <oliver.epper@gmail.com>
