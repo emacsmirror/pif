@@ -43,7 +43,7 @@
 ;;
 ;; In ~init.el~, call ~pif-reset~ to reset the colors and install
 ;; ~pif-update APPEARANCE~ in the ~kill-emacs-hook~.  This allows pif
-;; will save the position, size of the initial-frame, and some colors
+;; to save the position, size of the initial-frame, and some colors
 ;; for the next start.
 ;;
 ;; Here's the exact setup that I use:
